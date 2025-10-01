@@ -17,6 +17,7 @@ import {
 	ServerToClientEventDeclaration,
 	FilterClientDeclarations,
 } from "./Types";
+import { ClientMiddlewareOverload } from "../middleware";
 
 // Keep the declarations fully isolated
 const declarationMap = new WeakMap<ClientDefinitionBuilder<RemoteDeclarations>, RemoteDeclarations>();
@@ -28,6 +29,7 @@ export class ClientDefinitionBuilder<T extends RemoteDeclarations> {
 		private configuration?: DefinitionConfiguration,
 		private namespace = NAMESPACE_ROOT,
 	) {
+		print(declarations)
 		declarationMap.set(this, declarations);
 		shouldYield.set(this, configuration?.ClientGetShouldYield ?? true);
 	}
@@ -82,11 +84,11 @@ export class ClientDefinitionBuilder<T extends RemoteDeclarations> {
 		$print(`WaitFor(${remoteId}) {${item.Type}~'${remoteId}'}`);
 
 		const config = this.configuration ?? {};
-
+		$print(item)
 		if (item.Type === "Function") {
 			return new ClientFunction(remoteId, config) as InferClientRemote<T[K]>;
 		} else if (item.Type === "Event") {
-			return new ClientEvent(remoteId, config) as InferClientRemote<T[K]>;
+			return new ClientEvent(remoteId, config, item.ServerMiddleware as ClientMiddlewareOverload<any>, item) as InferClientRemote<T[K]>;
 		} else if (item.Type === "AsyncFunction") {
 			return new ClientAsyncFunction(remoteId, config) as InferClientRemote<T[K]>;
 		} else if (item.Type === "ExperienceEvent") {
@@ -116,13 +118,13 @@ export class ClientDefinitionBuilder<T extends RemoteDeclarations> {
 		const config = this.configuration ?? {};
 
 		if (item.Type === "Function") {
-			return ClientFunction.Wait(remoteId, config) as Promise<InferClientRemote<T[K]>>;
+			return ClientFunction.Wait(remoteId, config, item.ClientMiddleware as ClientMiddlewareOverload<any>) as unknown as Promise<InferClientRemote<T[K]>>;
 		} else if (item.Type === "Event") {
-			return ClientEvent.Wait(remoteId, config) as Promise<InferClientRemote<T[K]>>;
+			return ClientEvent.Wait(remoteId, config, item.ServerMiddleware as ClientMiddlewareOverload<any>) as unknown as Promise<InferClientRemote<T[K]>>;
 		} else if (item.Type === "AsyncFunction") {
-			return ClientAsyncFunction.Wait(remoteId, config) as Promise<InferClientRemote<T[K]>>;
+			return ClientAsyncFunction.Wait(remoteId, config) as unknown as Promise<InferClientRemote<T[K]>>;
 		} else if (item.Type === "ExperienceEvent") {
-			return ClientEvent.Wait(getGlobalRemote(remoteId), config) as Promise<InferClientRemote<T[K]>>;
+			return ClientEvent.Wait(getGlobalRemote(remoteId), config) as unknown as Promise<InferClientRemote<T[K]>>;
 		}
 
 		throw `Type '${item.Type}' is not a valid client remote object type`;

@@ -64,6 +64,7 @@ export default class ServerEvent<
 		private configuration: DefinitionConfiguration,
 	) {
 		super([...middlewares, ...(configuration.ServerGlobalMiddleware ?? [])]);
+		// super(middlewares)
 		assert(!IS_CLIENT, "Cannot create a NetServerEvent on the client!");
 		this.instance = findOrCreateRemote("RemoteEvent", name);
 		this.connection = new NetServerScriptSignal(this.instance.OnServerEvent, this.instance);
@@ -81,11 +82,14 @@ export default class ServerEvent<
 	public Connect(callback: (player: Player, ...args: ConnectArgs) => void): Readonly<NetServerSignalConnection> {
 		const remoteId = this.instance.Name;
 		const microprofile = this.configuration.MicroprofileCallbacks;
-
-		return this.connection.Connect((player, ...args) => {
-			if (microprofile) debug.profilebegin(`Net: ${remoteId}`);
-			this._processMiddleware(callback)?.(player, ...((args as unknown) as ConnectArgs));
-		});
+		if (microprofile) {
+			return this.connection.Connect((player, ...args) => {
+				debug.profilebegin(`Net: ${remoteId}`)
+				this._processMiddleware(callback)?.(player, ...((args as unknown) as ConnectArgs));
+			})
+		} else {
+			return this.connection.Connect((player, ...args) => this._processMiddleware(callback)?.(player, ...((args as unknown) as ConnectArgs)))
+		}
 	}
 
 	/**

@@ -7,7 +7,7 @@ import { oneOf } from "../internal/validator";
 import ClientAsyncFunction, { ClientAsyncCallback, ClientAsyncCaller } from "../client/ClientAsyncFunction";
 import ClientEvent, { ClientListenerEvent, ClientSenderEvent } from "../client/ClientEvent";
 import ClientFunction from "../client/ClientFunction";
-import { MiddlewareOverload } from "../middleware";
+import { ClientMiddlewareOverload, MiddlewareOverload } from "../middleware";
 import ServerAsyncFunction, { ServerAsyncCallback, ServerAsyncCaller } from "../server/ServerAsyncFunction";
 import ServerEvent, { ServerListenerEvent, ServerSenderEvent } from "../server/ServerEvent";
 import ServerFunction from "../server/ServerFunction";
@@ -27,6 +27,8 @@ export interface FunctionDeclarationLike {
 	readonly Type: "Function";
 	/** @internal */
 	readonly ServerMiddleware?: [...mw: MiddlewareOverload<any>];
+	/** @internal */
+	readonly ClientMiddleware?: [...mw: ClientMiddlewareOverload<any>];
 }
 
 export interface ExperienceEventDeclarationLike {

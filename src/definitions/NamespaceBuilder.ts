@@ -23,9 +23,10 @@ export class NamespaceBuilder<N extends RemoteDeclarations> {
 	public constructor(declarations: N, private config?: NamespaceConfiguration) {
 		declarationMap.set(this, declarations);
 		$dbg(declarations, (value, source) => {
-			print(`[${source.file}:${source.lineNumber}]`, "== Namespace Declarations ==");
+			$print(`[${source.file}:${source.lineNumber}]`, "== Namespace Declarations ==");
 			for (const [name, va] of pairs(value)) {
-				print(`[${source.file}:${source.lineNumber}]`, name, va.Type);
+				// const gr = va as un
+				$print(`[${source.file}:${source.lineNumber}]`, name, value);
 			}
 		});
 	}

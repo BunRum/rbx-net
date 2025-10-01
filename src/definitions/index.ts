@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MiddlewareOverload, NetGlobalMiddleware } from "../middleware";
+import { ClientMiddlewareOverload, MiddlewareOverload, NetGlobalMiddleware } from "../middleware";
 import {
 	FunctionDeclaration,
 	RemoteDeclarations,
@@ -179,10 +179,12 @@ namespace NetDefinitions {
 	 */
 	export function ServerFunction<ServerFunction extends (...args: any[]) => any>(
 		mw?: MiddlewareOverload<Parameters<ServerFunction>>,
+		cmv?: ClientMiddlewareOverload<unknown[]>
 	) {
 		return {
 			Type: "Function",
 			ServerMiddleware: mw,
+			ClientMiddleware: cmv
 		} as FunctionDeclaration<Parameters<ServerFunction>, ReturnType<ServerFunction>>;
 	}
 
@@ -195,10 +197,20 @@ namespace NetDefinitions {
 	 *
 	 * On the server, this will give an event that can use `SendToPlayer`, `SendToAllPlayers`, `SendToAllPlayersExcept`
 	 *
+	 * the only server to client with middleware ability
 	 */
-	export function ServerToClientEvent<ServerArgs extends readonly unknown[] = unknown[]>() {
+	export function ServerToClientEvent<
+	ServerArgs extends readonly unknown[] = unknown[]
+	>(): ServerToClientEventDeclaration<ServerArgs>;
+	export function ServerToClientEvent<
+	ServerArgs extends readonly unknown[] = unknown[]
+	>(mv?: ClientMiddlewareOverload<ServerArgs>): ServerToClientEventDeclaration<ServerArgs>;
+
+	export function ServerToClientEvent<
+	ServerArgs extends readonly unknown[] = unknown[]
+	>(mv?: ClientMiddlewareOverload<ServerArgs>) {
 		return {
-			ServerMiddleware: [],
+			ServerMiddleware: mv,
 			Type: "Event",
 		} as ServerToClientEventDeclaration<ServerArgs>;
 	}

@@ -4,6 +4,7 @@ import createRateLimiter from "./RateLimitMiddleware";
 import NetTypeCheckingMiddleware from "./TypeCheckMiddleware";
 
 export type NextCaller<R = void> = (player: defined, ...args: ReadonlyArray<unknown>) => R;
+export type ClientNextCaller<R = void> = (...args: ReadonlyArray<unknown>) => R;
 
 export type MiddlewareOverload<T extends readonly unknown[]> =
 	| []
@@ -12,7 +13,19 @@ export type MiddlewareOverload<T extends readonly unknown[]> =
 	| [NetMiddleware, NetMiddleware, NetMiddleware<T>]
 	| [NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware<T>]
 	| [NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware<T>]
-	| [NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware<T>];
+	| [NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware, NetMiddleware<T>]
+;
+
+export type ClientMiddlewareOverload<T extends readonly unknown[]> =
+	| []
+	| [clientMiddleware<T>]
+	| [clientMiddleware, clientMiddleware<T>]
+	| [clientMiddleware, clientMiddleware, clientMiddleware<T>]
+	| [clientMiddleware, clientMiddleware, clientMiddleware, clientMiddleware<T>]
+	| [clientMiddleware, clientMiddleware, clientMiddleware, clientMiddleware, clientMiddleware<T>]
+	| [clientMiddleware, clientMiddleware, clientMiddleware, clientMiddleware, clientMiddleware, clientMiddleware<T>]
+	;
+
 
 export type NetMiddleware<
 	CallArguments extends ReadonlyArray<unknown> = Array<unknown>,
@@ -22,10 +35,24 @@ export type NetMiddleware<
 	event: NetManagedInstance,
 ) => (sender: Player, ...args: PreviousCallArguments) => void;
 
+export type clientMiddleware<
+	CallArguments extends ReadonlyArray<unknown> = Array<unknown>,
+	PreviousCallArguments extends ReadonlyArray<unknown> = Array<unknown>
+> = (
+	next: ( ...args: CallArguments) => void,
+	event: NetManagedInstance,
+) => (...args: PreviousCallArguments) => void;
+
 export type NetGlobalMiddleware = (
 	next: (player: Readonly<Player>, ...args: readonly unknown[]) => void,
 	event: Readonly<NetManagedInstance>,
 ) => (sender: Readonly<Player>, ...args: readonly unknown[]) => void;
+
+export type ClientNetGlobalMiddleware = (
+	next: ( ...args: readonly unknown[]) => void,
+	event: Readonly<NetManagedInstance>,
+) => ( ...args: readonly unknown[]) => void;
+
 
 export interface ReadonlyGlobalMiddlewareArgs {
 	(remoteName: string, remoteData: readonly unknown[], callingPlayer?: Player): void;

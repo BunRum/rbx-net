@@ -1,0 +1,91 @@
+the creation route
+
+remotes = CreateDefinitions({
+    m
+})
+
+CreateDefinitions<T extends RemoteDeclarations>
+(declarations: T, configuration?: DefinitionConfiguration)
+    return Definitions.Create(declarations, configuration)
+
+Definitions.Create<T extends RemoteDeclarations>
+(declarations: T, configuration?: DefinitionConfiguration)
+    configuration ??= {}
+    validateDeclarations(declarations) // validation shit not included in the route
+    return identity<DefinitionsCreateResult<T>>({
+		Server: new ServerDefinitionBuilder<T>(declarations, configuration),
+		Client: new ClientDefinitionBuilder<T>(declarations, configuration),
+	})
+
+declarationMap: WeakMap<ServerDefinitionBuilder<RemoteDeclarations>, RemoteDeclarations>
+class ServerDefinitionBuilder<T extends RemoteDeclarations> {
+    constructor(declarations: T, configuration: ServerDefinitionConfig, private namespace = NAMESPACE_ROOT (@) ) {
+        {
+			ServerAutoGenerateRemotes: AutoGenerateServerRemotes = true,
+			ServerGlobalMiddleware: GlobalMiddleware,
+		} = config;
+        declarationMap.set(this, declarations)
+
+        if is Server
+            this._InitServer()
+    }
+
+    _InitServer() {
+        declarations = declarationMap.get(this)
+        for ([remoteId, declaration] of pairs(declarations)) {
+            switch (declaration.Type) {
+				case "Event":
+					this._CreateOrGetInstance(remoteId, declaration);
+					break;
+			}
+		}
+    }
+
+    // for loop
+    _CreateOrGetInstance(remoteId, declaration) {
+        event: ServerEvent
+        namespacedId = this.namespace !== NAMESPACE_ROOT ? 
+        [this.namespace, remoteId].join(NAMESPACE_SEPERATOR) : id
+        config: ServerDefinitionConfig = this.config
+        if declaration.Type === "Event"
+            if remoteEventCache has remoteId
+                return remoteEventCache.get(remoteId)
+            if declaration.ServerMiddleware
+                event = new ServerEvent(namespacedId, declaration.ServerMiddleware, config)
+            else
+                event = new ServerEvent(namespaceId, undefined, config)
+            remoteEventCache.set(remoteId, event)
+    }
+}
+
+class ServerEvent <
+		ConnectArgs extends ReadonlyArray<unknown> = Array<unknown>,
+		CallArgs extends ReadonlyArray<unknown> = Array<unknown>
+    >
+    extends MiddlewareEvent
+    implements NetManagedInstance, ServerListenerEvent<ConnectArgs>, ServerSenderEvent<CallArgs>
+{
+    constructor(name: string, middlewares: MiddlewareOverload<ConnectArgs> = [], configuration: DefinitionConfiguration) {
+        super(middlewares)
+        this.instance = findOrCreateRemote("RemoteEvent", name)
+        this.connection = new NetServerScriptSignal(this.instance.OnServerEvent, this.instance)
+    }
+}
+
+the route
+
+remote: ServerEvent = remotes.Get("m") // returns createOrGetInstance(remoteId, item which is declarationMap.get(this which is remotes)[remoteId])
+
+remote.SendToAllPlayers()
+    ServerEvent.SendToAllPlayers(...args: CallArgs)
+        this.instance.FireAllClients(...args) // fires OnClientEvent
+        
+ClientDefinitionBuilder.GetOrThrow(remoteId)
+    Item
+class ClientEvent {
+    
+}
+
+
+
+ClientEvent.Connect(callback) callback refers to

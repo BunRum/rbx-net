@@ -1,5 +1,7 @@
 import { DefinitionConfiguration } from "../definitions";
 import { getRemoteOrThrow, IS_SERVER, waitForRemote } from "../internal";
+import { ClientMiddlewareOverload } from "../middleware";
+import ClientMiddlewareEvent from "./ClientMiddlewareEvent";
 
 /**
  * Interface for client listening events
@@ -26,9 +28,19 @@ export interface ClientSenderEvent<CallArguments extends ReadonlyArray<unknown>>
 class ClientEvent<
 	ConnectArgs extends ReadonlyArray<unknown> = Array<unknown>,
 	CallArguments extends ReadonlyArray<unknown> = Array<unknown>
-> implements ClientListenerEvent<ConnectArgs>, ClientSenderEvent<CallArguments> {
+>
+extends ClientMiddlewareEvent
+implements ClientListenerEvent<ConnectArgs>, ClientSenderEvent<CallArguments> {
 	private instance: RemoteEvent;
-	public constructor(name: string, private configuration: DefinitionConfiguration) {
+
+	public constructor(
+		name: string, 
+		private configuration: DefinitionConfiguration, 
+		middlewares: ClientMiddlewareOverload<ConnectArgs> = [],
+		item?: unknown
+	) {
+		print(middlewares, item, "candy cookie")
+		super([...middlewares])
 		this.instance = getRemoteOrThrow("RemoteEvent", name);
 		assert(!IS_SERVER, "Cannot fetch NetClientEvent on the server!");
 	}
@@ -41,10 +53,10 @@ class ClientEvent<
 	public static Wait<
 		ConnectArgs extends ReadonlyArray<unknown> = Array<unknown>,
 		CallArguments extends ReadonlyArray<unknown> = Array<unknown>
-	>(name: string, configuration: DefinitionConfiguration) {
+	>(name: string, configuration: DefinitionConfiguration, middlewares: ClientMiddlewareOverload<ConnectArgs> = [],) {
 		return Promise.defer<ClientEvent<ConnectArgs, CallArguments>>(async resolve => {
 			await waitForRemote("RemoteEvent", name, 60);
-			resolve(new ClientEvent(name, configuration));
+			resolve(new ClientEvent(name, configuration, middlewares));
 		});
 	}
 
@@ -55,14 +67,21 @@ class ClientEvent<
 	public Connect(callback: (...args: ConnectArgs) => void): RBXScriptConnection {
 		const remoteId = this.instance.Name;
 		const microprofile = this.configuration.MicroprofileCallbacks;
+		// const modifiedcallback = callback as unknown as ((player: Player, ...args: ConnectArgs) => void)
 
 		if (microprofile) {
 			return this.instance.OnClientEvent.Connect((...args) => {
 				debug.profilebegin(`Net: ${remoteId}`);
-				callback(...((args as unknown) as ConnectArgs));
+				// this._processMiddleware()
+				const modifed = args as unknown as ConnectArgs
+				this._processMiddleware(callback)?.(...modifed)
 			});
 		} else {
-			return this.instance.OnClientEvent.Connect(callback);
+			print("im invincible")
+			return this.instance.OnClientEvent.Connect((...args) => {
+				const modifed = args as unknown as ConnectArgs
+				this._processMiddleware(callback)?.(...modifed)
+			});
 		}
 	}
 }

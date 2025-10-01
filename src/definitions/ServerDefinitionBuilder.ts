@@ -74,7 +74,7 @@ export class ServerDefinitionBuilder<T extends RemoteDeclarations> {
 		$dbg(declarations, (value, source) => {
 			print(`[${source.file}:${source.lineNumber}]`, "== Server Declarations ==");
 			for (const [name, va] of pairs(value)) {
-				print(`[${source.file}:${source.lineNumber}]`, name, va.Type);
+				print(`[${source.file}:${source.lineNumber}]`, name, (va as any).Type);
 			}
 		});
 
@@ -104,11 +104,8 @@ export class ServerDefinitionBuilder<T extends RemoteDeclarations> {
 			if (remoteFunctionCache.has(namespacedId)) {
 				return remoteFunctionCache.get(namespacedId)!;
 			} else {
-				if (declaration.ServerMiddleware) {
-					func = new ServerFunction(namespacedId, declaration.ServerMiddleware, config);
-				} else {
-					func = new ServerFunction(namespacedId, undefined, config);
-				}
+				func = new ServerFunction(namespacedId, declaration.ServerMiddleware, config)
+				
 				CollectionService.AddTag(func.GetInstance(), TagId.DefinitionManaged);
 				remoteFunctionCache.set(namespacedId, func);
 
@@ -188,7 +185,8 @@ export class ServerDefinitionBuilder<T extends RemoteDeclarations> {
 
 		$print("Running remote prefetch for", this.namespace);
 
-		const declarations = declarationMap.get(this)! as RemoteDeclarationDict<T>;
+		const declarations = declarationMap.get(this)!;
+		// declarations.
 		for (const [id, declaration] of pairs(declarations)) {
 			switch (declaration.Type) {
 				case "Event":
@@ -198,7 +196,7 @@ export class ServerDefinitionBuilder<T extends RemoteDeclarations> {
 					this._CreateOrGetInstance(id, declaration);
 					break;
 				case "Namespace":
-					this.GetNamespace(id);
+					this.GetNamespace(id as keyof FilterGroups<T> & string);
 					break;
 			}
 		}
