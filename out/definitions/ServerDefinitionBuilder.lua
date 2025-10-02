@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.Parent.rbxts_include.RuntimeLib)
 local ServerAsyncFunction = TS.import(script, script.Parent.Parent, "server", "ServerAsyncFunction").default
 local ServerEvent = TS.import(script, script.Parent.Parent, "server", "ServerEvent").default
 local ServerFunction = TS.import(script, script.Parent.Parent, "server", "ServerFunction").default

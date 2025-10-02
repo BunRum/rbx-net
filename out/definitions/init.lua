@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.rbxts_include.RuntimeLib)
 -- eslint-disable @typescript-eslint/no-explicit-any 
 local DeclarationTypeCheck = TS.import(script, script, "Types").DeclarationTypeCheck
 local ServerDefinitionBuilder = TS.import(script, script, "ServerDefinitionBuilder").ServerDefinitionBuilder

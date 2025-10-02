@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.rbxts_include.RuntimeLib)
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService")
 local collectionService = game:GetService("CollectionService")

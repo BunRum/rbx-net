@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.Parent.rbxts_include.RuntimeLib)
 local ClientDefinitionBuilder = TS.import(script, script.Parent, "ClientDefinitionBuilder").ClientDefinitionBuilder
 local ServerDefinitionBuilder = TS.import(script, script.Parent, "ServerDefinitionBuilder").ServerDefinitionBuilder
 local RunService = game:GetService("RunService")

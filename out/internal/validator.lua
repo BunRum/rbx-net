@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.Parent.rbxts_include.RuntimeLib)
 local isMixed = TS.import(script, script.Parent, "tables").isMixed
 local Workspace = game:GetService("Workspace")
 local ServerStorage = game:GetService("ServerStorage")

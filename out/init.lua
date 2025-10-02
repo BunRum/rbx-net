@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.rbxts_include.RuntimeLib)
 local NetServerContext = TS.import(script, script, "server")
 local NetClientContext = TS.import(script, script, "client")
 local NetDefinitions = TS.import(script, script, "definitions").default
@@ -48,7 +48,7 @@ do
 		     * The version of RbxNet
 		     
 	]]
-	local VERSION = if "production" == "production" then "3.1.2-0" else "DEV " .. (DIST .. (")} " .. "3.1.2-0"))
+	local VERSION = if "production" == "production" then "3.1.2" else "DEV " .. (DIST .. (")} " .. "3.1.2"))
 	_container.VERSION = VERSION
 	--[[
 		*

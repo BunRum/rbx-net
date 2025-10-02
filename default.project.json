@@ -2,8 +2,14 @@
     "name": "net",
     "tree": {
         "$path": "out",
-        "node_modules": {
-            "$path": "node_modules"
+        "rbxts_include": {
+            "$path": "include",
+            "node_modules": {
+                "$className": "Folder",
+                "@rbxts": {
+                    "$path": "node_modules/@rbxts"
+                }
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.rbxts_include.RuntimeLib)
 local AsyncFunction = TS.import(script, script, "ClientAsyncFunction").default
 local Event = TS.import(script, script, "ClientEvent").default
 local Function = TS.import(script, script, "ClientFunction").default

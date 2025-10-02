@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.rbxts_include.RuntimeLib)
 local createLoggerMiddleware = TS.import(script, script, "LoggerMiddleware")
 local createRateLimiter = TS.import(script, script, "RateLimitMiddleware").default
 local NetTypeCheckingMiddleware = TS.import(script, script, "TypeCheckMiddleware")

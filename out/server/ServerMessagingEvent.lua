@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.Parent.rbxts_include.RuntimeLib)
 local _ExperienceBroadcastEvent = TS.import(script, script.Parent.Parent, "messaging", "ExperienceBroadcastEvent")
 local ExperienceBroadcastEvent = _ExperienceBroadcastEvent.default
 local isSubscriptionMessage = _ExperienceBroadcastEvent.isSubscriptionMessage

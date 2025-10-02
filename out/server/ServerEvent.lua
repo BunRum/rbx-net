@@ -1,5 +1,5 @@
 --Compiled with roblox-ts v1.3.3
-local TS = _G[script]
+local TS = require(script.Parent.Parent.rbxts_include.RuntimeLib)
 local _internal = TS.import(script, script.Parent.Parent, "internal")
 local findOrCreateRemote = _internal.findOrCreateRemote
 local IS_CLIENT = _internal.IS_CLIENT
