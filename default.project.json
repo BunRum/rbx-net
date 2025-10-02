@@ -1,9 +1,12 @@
 {
-    "name": "net",
-    "tree": {
-        "$path": "out",
-        "node_modules": {
-            "$path": "node_modules"
-        }
+  "name": "net",
+  "tree": {
+    "$path": "out",
+    "src": {
+      "$path": "src"
+    },
+    "node_modules": {
+      "$path": "node_modules"
     }
+  }
 }
